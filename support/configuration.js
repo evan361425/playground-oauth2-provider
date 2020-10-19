@@ -39,9 +39,9 @@ module.exports = {
     profile: ['family_name', 'given_name', 'name', 'birthdate'],
   },
   features: {
-    devInteractions: { enabled: false }, // defaults to true
+    devInteractions: { enabled: true }, // defaults to true
 
-    deviceFlow: { enabled: true }, // defaults to false
+    deviceFlow: { enabled: false }, // defaults to false
     introspection: { enabled: true }, // defaults to false
     revocation: { enabled: true }, // defaults to false
   },

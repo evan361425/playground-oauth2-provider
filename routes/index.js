@@ -181,9 +181,15 @@ module.exports = (app, provider) => {
   app.use((err, req, res, next) => {
     if (err instanceof SessionNotFound) {
       // handle interaction expired / session not found error
-      res.redirect('/auth')
+      res.redirect('/')
     } else {
       next(err);
     }
   });
+
+  app.get('/', (req, res) => {
+    res.render('welcome', {
+      layout: null
+    })
+  })
 };
