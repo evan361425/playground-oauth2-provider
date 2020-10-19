@@ -1,0 +1,38 @@
+{
+  "name": "test-provider",
+  "version": "1.0.0",
+  "description": "test provider side of oAuth2",
+  "main": "app.js",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.2.0",
+    "helmet": "^4.1.1",
+    "lodash": "^4.17.20",
+    "nanoid": "^3.1.12",
+    "nodemon": "^2.0.5",
+    "object-hash": "^2.0.3",
+    "oidc-provider": "^6.29.5",
+    "oidc-token-hash": "^5.0.0",
+    "raw-body": "^2.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evan361425/oAuth2ProviderSideTesting.git"
+  },
+  "keywords": [
+    "auth"
+  ],
+  "author": "Evan Lu <wu0dj2k7ao3@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evan361425/oAuth2ProviderSideTesting/issues"
+  },
+  "homepage": "https://github.com/evan361425/oAuth2ProviderSideTesting#readme"
+}
