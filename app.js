@@ -73,6 +73,7 @@ let server;
 
   app.use('/', provider.callback);
   server = app.listen(PORT);
+  console.log(`Server listening at http://localhost:${PORT}`)
 })().catch((err) => {
   if (server && server.listening) server.close();
   console.error(err);

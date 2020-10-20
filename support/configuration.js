@@ -18,9 +18,13 @@ module.exports = {
       client_id: 'client-id-test',
       client_secret: 'client-secret-test-with-some-other-text',
       grant_types: ['refresh_token', 'authorization_code'],
+      response_types: ['code'],
       redirect_uris: ['http://localhost:3000/cb/as1'],
     }
   ],
+  formats: {
+    AccessToken: 'jwt',
+  },
   interactions: {
     policy: interactions,
     url(ctx, interaction) { // eslint-disable-line no-unused-vars
@@ -38,12 +42,15 @@ module.exports = {
     phone: ['phone_number'],
     profile: ['family_name', 'given_name', 'name', 'birthdate'],
   },
+  acceptQueryParamAccessTokens: false,
   features: {
     devInteractions: { enabled: true }, // defaults to true
 
     deviceFlow: { enabled: false }, // defaults to false
+    backchannelLogout: { enabled: true },
     introspection: { enabled: true }, // defaults to false
     revocation: { enabled: true }, // defaults to false
+    pushedAuthorizationRequests: { enabled: true },
   },
   jwks: {
     keys: [

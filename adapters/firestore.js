@@ -11,7 +11,7 @@
  */
 
 const undefinedFirestoreValue = 'custom.type.firestore'; // A work around as firestore does not support undefined.
-const namePrefix = 'oidc_library';
+const namePrefix = 'OIDC_';
 
 const admin = require('firebase-admin'); // eslint-disable-line import/no-unresolved
 
@@ -50,6 +50,9 @@ class FirestoreAdapter {
       return undefined;
     }
     const data = response.data();
+    if (data.consumed) {
+      return undefined;
+    }
     return this.updateNestedObject(data.payload, undefinedFirestoreValue, undefined);
   }
 
@@ -63,6 +66,9 @@ class FirestoreAdapter {
       return undefined;
     }
     const data = response[0].data();
+    if (data.consumed) {
+      return undefined;
+    }
     return this.updateNestedObject(data.payload, undefinedFirestoreValue, undefined);
   }
 
@@ -72,6 +78,9 @@ class FirestoreAdapter {
       return undefined;
     }
     const data = response.docs[0].data();
+    if (data.consumed) {
+      return undefined;
+    }
     return this.updateNestedObject(data.payload, undefinedFirestoreValue, undefined);
   }
 
@@ -96,9 +105,9 @@ class FirestoreAdapter {
     if (!response.exists) {
       return;
     }
-    const payload = response.data();
-    payload.consumed = Math.floor(Date.now() / 1000);
-    await db.collection(this.name).doc(id).update(payload);
+    const data = response.data();
+    data.consumed = Math.floor(Date.now() / 1000);
+    await db.collection(this.name).doc(id).update(data);
   }
 
   /**
