@@ -1,8 +1,18 @@
 const store = new Map();
 const logins = new Map();
-const { nanoid } = require('nanoid');
+const {
+  nanoid,
+} = require('nanoid');
 
+/**
+ * Account for provider
+ */
 class Account {
+  /**
+   * Build account
+   * @param {string} id
+   * @param {object} profile
+   */
   constructor(id, profile) {
     this.accountId = id || nanoid();
     this.profile = profile;
@@ -10,9 +20,9 @@ class Account {
   }
 
   /**
-   * @param use - can either be "id_token" or "userinfo", depending on
+   * @param {string} use - can either be "id_token" or "userinfo", depending on
    *   where the specific claims are intended to be put in.
-   * @param scope - the intended scope, while oidc-provider will mask
+   * @param {array} scope - the intended scope, while oidc-provider will mask
    *   claims depending on the scope automatically you might want to skip
    *   loading some claims from external resources etc. based on this detail
    *   or not return them in id tokens but only userinfo and so on.
@@ -34,11 +44,17 @@ class Account {
         email_verified: false,
         family_name: 'fn',
         given_name: 'gv',
-        name: 'name'
-      }
+        name: 'name',
+      };
     }
   }
 
+  /**
+   * find by federation
+   * @param  {string}  provider
+   * @param  {object}  claims
+   * @return {Promise}
+   */
   static async findByFederated(provider, claims) {
     const id = `${provider}.${claims.sub}`;
     if (!logins.get(id)) {
@@ -47,17 +63,31 @@ class Account {
     return logins.get(id);
   }
 
-  static async findByLogin(login) {
-    if (!logins.get(login)) {
-      logins.set(login, new Account(login));
+  /**
+   * Find by login id
+   * @param  {string}  loginId
+   * @return {Promise}
+   */
+  static async findByLogin(loginId) {
+    if (!logins.get(loginId)) {
+      logins.set(loginId, new Account(loginId));
     }
 
-    return logins.get(login);
+    return logins.get(loginId);
   }
 
-  static async findAccount(ctx, id, token) { // eslint-disable-line no-unused-vars
-    // token is a reference to the token used for which a given account is being loaded,
-    //   it is undefined in scenarios where account claims are returned from authorization endpoint
+  /**
+   * Find account by user id
+   * @param  {KoaContext}  ctx
+   * @param  {string}      id
+   * @param  {string}      token
+   * @return {Promise}
+   */
+  static async findAccount(ctx, id, token) {
+    // token is a reference to the token
+    //   used for which a given account is being loaded,
+    //   it is undefined in scenarios where
+    //   account claims are returned from authorization endpoint
     // ctx is the koa request context
     // if (!store.get(id)) new Account(id); // eslint-disable-line no-new
     return store.get(id);
@@ -72,8 +102,8 @@ new Account('test1', {
   family_name: 'Robot',
   given_name: 'Name1',
   name: 'Abc',
-  phone_number: '88888888888'
-})
+  phone_number: '88888888888',
+});
 
 new Account('test2', {
   address: 'address2',
@@ -83,7 +113,7 @@ new Account('test2', {
   family_name: 'Robot',
   given_name: 'Name2',
   name: 'Def',
-  phone_number: '99999999999'
-})
+  phone_number: '99999999999',
+});
 
 module.exports = Account;

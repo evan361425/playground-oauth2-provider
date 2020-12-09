@@ -1,4 +1,9 @@
-const { interactionPolicy: { Prompt, base: policy } } = require('oidc-provider');
+const {
+  interactionPolicy: {
+    Prompt,
+    base: policy,
+  },
+} = require('oidc-provider');
 
 // copies the default policy, already has login and consent prompt policies
 const interactions = policy();
@@ -13,15 +18,13 @@ const selectAccount = new Prompt({
 interactions.add(selectAccount, 0);
 
 module.exports = {
-  clients: [
-    {
-      client_id: 'client-id-test',
-      client_secret: 'client-secret-test-with-some-other-text',
-      grant_types: ['refresh_token', 'authorization_code'],
-      response_types: ['code'],
-      redirect_uris: ['http://localhost:3000/cb/as1'],
-    }
-  ],
+  clients: [{
+    client_id: 'client-id-test',
+    client_secret: 'client-secret-test-with-some-other-text',
+    grant_types: ['refresh_token', 'authorization_code'],
+    response_types: ['code'],
+    redirect_uris: ['http://localhost:3000/cb/as1'],
+  }],
   formats: {
     AccessToken: 'jwt',
   },
@@ -32,8 +35,13 @@ module.exports = {
     },
   },
   cookies: {
-    long: { signed: true, maxAge: (1 * 24 * 60 * 60) * 1000 }, // 1 day in ms
-    short: { signed: true },
+    long: {
+      signed: true,
+      maxAge: (1 * 24 * 60 * 60) * 1000,
+    }, // 1 day in ms
+    short: {
+      signed: true,
+    },
     keys: ['testkey.first', 'testkey.rotated', 'testkey.addition'],
   },
   claims: {
@@ -44,15 +52,28 @@ module.exports = {
   },
   acceptQueryParamAccessTokens: false,
   features: {
-    devInteractions: { enabled: true }, // defaults to true
+    devInteractions: {
+      enabled: true,
+    }, // defaults to true
 
-    deviceFlow: { enabled: false }, // defaults to false
-    backchannelLogout: { enabled: true },
-    introspection: { enabled: true }, // defaults to false
-    revocation: { enabled: true }, // defaults to false
-    pushedAuthorizationRequests: { enabled: true },
+    deviceFlow: {
+      enabled: false,
+    }, // defaults to false
+    backchannelLogout: {
+      enabled: true,
+    },
+    introspection: {
+      enabled: true,
+    }, // defaults to false
+    revocation: {
+      enabled: true,
+    }, // defaults to false
+    pushedAuthorizationRequests: {
+      enabled: true,
+    },
   },
   jwks: {
+    /*eslint-disable */
     keys: [
       {
         d: 'VEZOsY07JTFzGTqv6cC2Y32vsfChind2I_TTuvV225_-0zrSej3XLRg8iE_u0-3GSgiGi4WImmTwmEgLo4Qp3uEcxCYbt4NMJC7fwT2i3dfRZjtZ4yJwFl0SIj8TgfQ8ptwZbFZUlcHGXZIr4nL8GXyQT0CK8wy4COfmymHrrUoyfZA154ql_OsoiupSUCRcKVvZj2JHL2KILsq_sh_l7g2dqAN8D7jYfJ58MkqlknBMa2-zi5I0-1JUOwztVNml_zGrp27UbEU60RqV3GHjoqwI6m01U7K0a8Q_SQAKYGqgepbAYOA-P4_TLl5KC4-WWBZu_rVfwgSENwWNEhw8oQ',
@@ -65,7 +86,8 @@ module.exports = {
         q: '3I1qeEDslZFB8iNfpKAdWtz_Wzm6-jayT_V6aIvhvMj5mnU-Xpj75zLPQSGa9wunMlOoZW9w1wDO1FVuDhwzeOJaTm-Ds0MezeC4U6nVGyyDHb4CUA3ml2tzt4yLrqGYMT7XbADSvuWYADHw79OFjEi4T3s3tJymhaBvy1ulv8M',
         qi: 'wSbXte9PcPtr788e713KHQ4waE26CzoXx-JNOgN0iqJMN6C4_XJEX-cSvCZDf4rh7xpXN6SGLVd5ibIyDJi7bbi5EQ5AXjazPbLBjRthcGXsIuZ3AtQyR0CEWNSdM7EyM5TRdyZQ9kftfz9nI03guW3iKKASETqX2vh0Z8XRjyU',
         use: 'sig',
-      }, {
+      },
+      {
         crv: 'P-256',
         d: 'K9xfPv773dZR22TVUB80xouzdF7qCg5cWjPjkHyv7Ws',
         kty: 'EC',
@@ -74,6 +96,7 @@ module.exports = {
         y: '_n8G69C-A2Xl4xUW2lF0i8ZGZnk_KPYrhv4GbTGu5G4',
       },
     ],
+    /* eslint-enable */
   },
   ttl: {
     AccessToken: 1 * 60 * 60, // 1 hour in seconds

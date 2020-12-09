@@ -1,4 +1,4 @@
-module.exports = app => {
+module.exports = (app) => {
   app.use((req, res) => {
     res.status(404);
 
@@ -11,18 +11,20 @@ module.exports = app => {
         session: null,
         client: {},
         dbg: {},
-        layout: 'bootstrap'
+        layout: 'bootstrap',
       });
       return;
     }
 
     // respond with json
     if (req.accepts('json')) {
-      res.send({ error: 'Not found' });
+      res.send({
+        error: 'Not found',
+      });
       return;
     }
 
     // default to plain-text. send()
     res.type('txt').send('Not found');
   });
-}
+};

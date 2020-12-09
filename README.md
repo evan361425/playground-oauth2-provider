@@ -1,19 +1,26 @@
-# Examples
+# playground-oauth2-provider
+OAuth2 provider side playground.
 
-See the following examples
+## install
 
-- [Koa](/example/koa.js)
-  - the provider is a part of your Koa application
-- [Express](/example/express.js)
-  - the provider is a part of your express application
-- [Standalone](/example/standalone.js)
-  - the provider is completely standalone
+```shell
+$npm install
+```
 
-Further resources
+Set up .env by [.env.example](.env.example)
 
-- [Configuration](/docs/README.md)
-- [Mounting to a path](/docs/README.md#mounting-oidc-provider)
+## run
 
-Useful to know oidc-provider dependencies
-- [Koa](https://koajs.com/) - web framework oidc-provider uses internally
-- [jose](https://github.com/panva/jose) - everything JOSE
+```shell
+$node app.js
+```
+
+or run for monitor change
+```shell
+$nodemon app.js
+```
+
+or simply
+```shell
+$npm run dev
+```

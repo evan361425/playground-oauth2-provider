@@ -1,28 +1,52 @@
 /* eslint-disable no-console, max-len, camelcase, no-unused-vars */
-const { strict: assert } = require('assert');
+const {
+  strict: assert,
+} = require('assert');
 const querystring = require('querystring');
-const { inspect } = require('util');
+const {
+  inspect,
+} = require('util');
 
 const isEmpty = require('lodash/isEmpty');
-const { urlencoded } = require('express'); // eslint-disable-line import/no-unresolved
+const {
+  urlencoded,
+} = require('express');
 
 const Account = require('../support/account');
 
-const body = urlencoded({ extended: false });
+const body = urlencoded({
+  extended: false,
+});
 
 const keys = new Set();
 const debug = (obj) => querystring.stringify(Object.entries(obj).reduce((acc, [key, value]) => {
   keys.add(key);
   if (isEmpty(value)) return acc;
-  acc[key] = inspect(value, { depth: null });
+  acc[`${key}`] = inspect(value, {
+    depth: null,
+  });
   return acc;
 }, {}), '<br/>', ': ', {
-  encodeURIComponent(value) { return keys.has(value) ? `<strong>${value}</strong>` : value; },
+  encodeURIComponent(value) {
+    return keys.has(value) ? `<strong>${value}</strong>` : value;
+  },
 });
 
 module.exports = (app, provider) => {
-  const { constructor: { errors: { SessionNotFound } } } = provider;
+  const {
+    constructor: {
+      errors: {
+        SessionNotFound,
+      },
+    },
+  } = provider;
 
+  /**
+   * Set header no-cache
+   * @param {express.Request}      req
+   * @param {express.Response}     res
+   * @param {express.NextFunction} next
+   */
   function setNoCache(req, res, next) {
     res.set('Pragma', 'no-cache');
     res.set('Cache-Control', 'no-cache, no-store');
@@ -32,64 +56,75 @@ module.exports = (app, provider) => {
   app.get('/interaction/:uid', setNoCache, async (req, res, next) => {
     try {
       const {
-        uid, prompt, params, session,
+        uid,
+        prompt,
+        params,
+        session,
       } = await provider.interactionDetails(req, res);
 
       const client = await provider.Client.find(params.client_id);
 
       switch (prompt.name) {
-        case 'select_account': {
-          if (!session) {
-            return provider.interactionFinished(req, res, { select_account: {} }, { mergeWithLastSubmission: false });
-          }
+      case 'select_account': {
+        if (!session) {
+          return provider.interactionFinished(req, res, {
+            select_account: {},
+          }, {
+            mergeWithLastSubmission: false,
+          });
+        }
 
-          const account = await provider.Account.findAccount(undefined, session.accountId);
-          const { email } = await account.claims('prompt', 'email', { email: null }, []);
+        const account = await provider.Account.findAccount(undefined, session.accountId);
+        const {
+          email,
+        } = await account.claims('prompt', 'email', {
+          email: null,
+        }, []);
 
-          return res.render('select_account', {
-            client,
-            uid,
-            email,
-            details: prompt.details,
-            params,
-            title: 'Sign-in',
-            session: session ? debug(session) : undefined,
-            dbg: {
-              params: debug(params),
-              prompt: debug(prompt),
-            },
-          });
-        }
-        case 'login': {
-          return res.render('login', {
-            client,
-            uid,
-            details: prompt.details,
-            params,
-            title: 'Sign-in',
-            session: session ? debug(session) : undefined,
-            dbg: {
-              params: debug(params),
-              prompt: debug(prompt),
-            },
-          });
-        }
-        case 'consent': {
-          return res.render('interaction', {
-            client,
-            uid,
-            details: prompt.details,
-            params,
-            title: 'Authorize',
-            session: session ? debug(session) : undefined,
-            dbg: {
-              params: debug(params),
-              prompt: debug(prompt),
-            },
-          });
-        }
-        default:
-          return undefined;
+        return res.render('select_account', {
+          client,
+          uid,
+          email,
+          details: prompt.details,
+          params,
+          title: 'Sign-in',
+          session: session ? debug(session) : undefined,
+          dbg: {
+            params: debug(params),
+            prompt: debug(prompt),
+          },
+        });
+      }
+      case 'login': {
+        return res.render('login', {
+          client,
+          uid,
+          details: prompt.details,
+          params,
+          title: 'Sign-in',
+          session: session ? debug(session) : undefined,
+          dbg: {
+            params: debug(params),
+            prompt: debug(prompt),
+          },
+        });
+      }
+      case 'consent': {
+        return res.render('interaction', {
+          client,
+          uid,
+          details: prompt.details,
+          params,
+          title: 'Authorize',
+          session: session ? debug(session) : undefined,
+          dbg: {
+            params: debug(params),
+            prompt: debug(prompt),
+          },
+        });
+      }
+      default:
+        return undefined;
       }
     } catch (err) {
       return next(err);
@@ -98,7 +133,11 @@ module.exports = (app, provider) => {
 
   app.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
     try {
-      const { prompt: { name } } = await provider.interactionDetails(req, res);
+      const {
+        prompt: {
+          name,
+        },
+      } = await provider.interactionDetails(req, res);
       assert.equal(name, 'login');
       const account = await Account.findByLogin(req.body.login);
 
@@ -109,7 +148,9 @@ module.exports = (app, provider) => {
         },
       };
 
-      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
+      await provider.interactionFinished(req, res, result, {
+        mergeWithLastSubmission: false,
+      });
     } catch (err) {
       next(err);
     }
@@ -118,7 +159,12 @@ module.exports = (app, provider) => {
   app.post('/interaction/:uid/continue', setNoCache, body, async (req, res, next) => {
     try {
       const interaction = await provider.interactionDetails(req, res);
-      const { prompt: { name, details } } = interaction;
+      const {
+        prompt: {
+          name,
+          details,
+        },
+      } = interaction;
       assert.equal(name, 'select_account');
 
       if (req.body.switch) {
@@ -132,8 +178,12 @@ module.exports = (app, provider) => {
         await interaction.save();
       }
 
-      const result = { select_account: {} };
-      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
+      const result = {
+        select_account: {},
+      };
+      await provider.interactionFinished(req, res, result, {
+        mergeWithLastSubmission: false,
+      });
     } catch (err) {
       next(err);
     }
@@ -141,7 +191,12 @@ module.exports = (app, provider) => {
 
   app.post('/interaction/:uid/confirm', setNoCache, body, async (req, res, next) => {
     try {
-      const { prompt: { name, details } } = await provider.interactionDetails(req, res);
+      const {
+        prompt: {
+          name,
+          details,
+        },
+      } = await provider.interactionDetails(req, res);
       assert.equal(name, 'consent');
 
       const consent = {};
@@ -159,8 +214,12 @@ module.exports = (app, provider) => {
       // changing this to true will remove those rejections in favour of just what you rejected above
       consent.replace = false;
 
-      const result = { consent };
-      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: true });
+      const result = {
+        consent,
+      };
+      await provider.interactionFinished(req, res, result, {
+        mergeWithLastSubmission: true,
+      });
     } catch (err) {
       next(err);
     }
@@ -172,7 +231,9 @@ module.exports = (app, provider) => {
         error: 'access_denied',
         error_description: 'End-User aborted interaction',
       };
-      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
+      await provider.interactionFinished(req, res, result, {
+        mergeWithLastSubmission: false,
+      });
     } catch (err) {
       next(err);
     }
@@ -181,7 +242,7 @@ module.exports = (app, provider) => {
   app.use((err, req, res, next) => {
     if (err instanceof SessionNotFound) {
       // handle interaction expired / session not found error
-      res.redirect('/')
+      res.redirect('/');
     } else {
       next(err);
     }
@@ -189,7 +250,7 @@ module.exports = (app, provider) => {
 
   app.get('/', (req, res) => {
     res.render('welcome', {
-      layout: null
-    })
-  })
+      layout: null,
+    });
+  });
 };

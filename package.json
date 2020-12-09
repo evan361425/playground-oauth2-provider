@@ -1,38 +1,43 @@
 {
-  "name": "test-provider",
+  "name": "playground-oauth2-provider",
   "version": "1.0.0",
-  "description": "test provider side of oAuth2",
+  "description": "OAuth2 client provider playground.",
   "main": "app.js",
   "dependencies": {
-    "cookie-parser": "^1.4.5",
-    "dotenv": "^8.2.0",
-    "ejs": "^3.1.5",
-    "express": "^4.17.1",
-    "firebase-admin": "^9.2.0",
-    "helmet": "^4.1.1",
-    "lodash": "^4.17.20",
-    "nanoid": "^3.1.12",
-    "nodemon": "^2.0.5",
-    "object-hash": "^2.0.3",
-    "oidc-provider": "^6.29.5",
-    "oidc-token-hash": "^5.0.0",
-    "raw-body": "^2.4.1"
+    "cookie-parser": "1.4.*",
+    "dotenv": "8.2.*",
+    "ejs": "3.1.*",
+    "express": "4.17.*",
+    "firebase-admin": "9.*",
+    "helmet": "4.*",
+    "lodash": "4.*",
+    "nanoid": "3.*",
+    "object-hash": "2.*",
+    "oidc-provider": "6.29.*",
+    "oidc-token-hash": "5.*",
+    "raw-body": "2.*"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-google": "0.14.0",
+    "eslint-plugin-security": "1.4.0",
+    "nodemon": "2.*"
+  },
   "scripts": {
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "lint": "eslint 'support/*.js' 'routes/*.js' 'adapters/*.js'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/evan361425/oAuth2ProviderSideTesting.git"
+    "url": "git+https://github.com/evan361425/playground-oauth2-provider.git"
   },
   "keywords": [
     "auth"
   ],
-  "author": "Evan Lu <wu0dj2k7ao3@gmail.com>",
+  "author": "Shueh Chou <wu0dj2k7ao3@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/evan361425/oAuth2ProviderSideTesting/issues"
+    "url": "https://github.com/evan361425/playground-oauth2-provider/issues"
   },
-  "homepage": "https://github.com/evan361425/oAuth2ProviderSideTesting#readme"
+  "homepage": "https://github.com/evan361425/playground-oauth2-provider#readme"
 }
