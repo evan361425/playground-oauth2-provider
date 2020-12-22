@@ -11,14 +11,19 @@
  * Reach out to @hadyrashwan <https://github.com/hadyrashwan> for questions on this community example.
  */
 /* eslint-enable */
+const admin = require('firebase-admin');
+
+admin.initializeApp({
+  credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS),
+  databaseURL: process.env.GOOGLE_DATABASE_NAME,
+});
 
 // A work around as firestore does not support undefined.
 const undefinedFirestoreValue = 'custom.type.firestore';
 const namePrefix = 'OIDC_';
 
-const admin = require('firebase-admin');
-
 const db = admin.firestore();
+
 /**
  * Use the library with Google's Firestore database
  *
@@ -30,7 +35,7 @@ class FirestoreAdapter {
    * @param {string} name
    */
   constructor(name) {
-    this.name = `${namePrefix}_${name.split(' ').join('_')}`;
+    this.name = `${namePrefix}${name.split(' ').join('_')}`;
   }
 
   /**
@@ -215,4 +220,47 @@ class FirestoreAdapter {
     return internalObject;
   }
 }
+
+async function deleteCollection(collectionPath, batchSize = 50) {
+  const collectionRef = db.collection(collectionPath);
+  const query = collectionRef.orderBy('__name__').limit(batchSize);
+
+  return new Promise((resolve, reject) => {
+    deleteQueryBatch(query, resolve)
+      .catch((err) => console.log(err.message));
+  });
+}
+
+async function deleteQueryBatch(query, resolve) {
+  const snapshot = await query.get();
+
+  const batchSize = snapshot.size;
+  if (batchSize === 0) {
+    // When there are no documents left, we are done
+    resolve();
+    return;
+  }
+
+  // Delete documents in a batch
+  const batch = db.batch();
+  snapshot.docs.forEach((doc) => {
+    batch.delete(doc.ref);
+  });
+  await batch.commit();
+
+  // Recurse on the next process tick, to avoid
+  // exploding the stack.
+  process.nextTick(() => {
+    deleteQueryBatch(query, resolve);
+  });
+}
+
+
+// clean storage if start up server
+if (process.env.NODE_ENV === 'development') {
+  deleteCollection(`${namePrefix}Session`);
+  deleteCollection(`${namePrefix}AuthorizationCode`);
+  deleteCollection(`${namePrefix}AccessToken`);
+}
+
 module.exports = FirestoreAdapter;

@@ -12,15 +12,11 @@ Set up .env by [.env.example](.env.example)
 ## run
 
 ```shell
-$node app.js
-```
-
-or run for monitor change
-```shell
-$nodemon app.js
-```
-
-or simply
-```shell
 $npm run dev
+```
+
+Fix coding style
+
+```shell
+$npm run lint
 ```

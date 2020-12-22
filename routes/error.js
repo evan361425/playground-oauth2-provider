@@ -1,30 +1,35 @@
-module.exports = (app) => {
-  app.use((req, res) => {
-    res.status(404);
+const { errors: { SessionNotFound } } = require('oidc-provider');
 
-    // respond with html page
-    if (req.accepts('html')) {
-      res.render('404', {
-        url: req.url,
-        title: '404 found!',
-        uid: 0,
-        session: null,
-        client: {},
-        dbg: {},
-        layout: 'bootstrap',
-      });
-      return;
-    }
+module.exports = (req, res) => {
+  if (err instanceof SessionNotFound) {
+    // handle interaction expired / session not found error
+    return res.redirect('/');
+  }
 
-    // respond with json
-    if (req.accepts('json')) {
-      res.send({
-        error: 'Not found',
-      });
-      return;
-    }
+  res.status(404);
 
-    // default to plain-text. send()
-    res.type('txt').send('Not found');
-  });
+  // respond with html page
+  if (req.accepts('html')) {
+    res.render('404', {
+      url: req.url,
+      title: '404 found!',
+      uid: 0,
+      session: null,
+      client: {},
+      dbg: {},
+      layout: 'bootstrap',
+    });
+    return;
+  }
+
+  // respond with json
+  if (req.accepts('json')) {
+    res.send({
+      error: 'Not found',
+    });
+    return;
+  }
+
+  // default to plain-text. send()
+  res.type('txt').send('Not found');
 };

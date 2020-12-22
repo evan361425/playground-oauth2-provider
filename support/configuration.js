@@ -4,6 +4,7 @@ const {
     base: policy,
   },
 } = require('oidc-provider');
+const Account = require('./account');
 
 // copies the default policy, already has login and consent prompt policies
 const interactions = policy();
@@ -18,13 +19,15 @@ const selectAccount = new Prompt({
 interactions.add(selectAccount, 0);
 
 module.exports = {
-  clients: [{
-    client_id: 'client-id-test',
-    client_secret: 'client-secret-test-with-some-other-text',
-    grant_types: ['refresh_token', 'authorization_code'],
-    response_types: ['code'],
-    redirect_uris: ['http://localhost:3000/cb/as1'],
-  }],
+  clients: [
+    {
+      client_id: 'client-id-test',
+      client_secret: 'client-secret-test-with-some-other-text',
+      grant_types: ['refresh_token', 'authorization_code'],
+      response_types: ['code'],
+      redirect_uris: ['http://localhost:3000/auth/cb/as1'],
+    },
+  ],
   formats: {
     AccessToken: 'jwt',
   },
@@ -105,4 +108,5 @@ module.exports = {
     DeviceCode: 10 * 60, // 10 minutes in seconds
     RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
   },
+  findAccount: Account.findAccount,
 };

@@ -1,45 +1,31 @@
-/* eslint-disable no-console, max-len, camelcase, no-unused-vars */
-const {
-  strict: assert,
-} = require('assert');
+const { strict: assert } = require('assert');
 const querystring = require('querystring');
-const {
-  inspect,
-} = require('util');
-
-const isEmpty = require('lodash/isEmpty');
-const {
-  urlencoded,
-} = require('express');
-
+const { inspect } = require('util');
+const { isEmpty, set } = require('lodash');
+const express = require('express');
 const Account = require('../support/account');
 
-const body = urlencoded({
-  extended: false,
-});
-
 const keys = new Set();
-const debug = (obj) => querystring.stringify(Object.entries(obj).reduce((acc, [key, value]) => {
-  keys.add(key);
-  if (isEmpty(value)) return acc;
-  acc[`${key}`] = inspect(value, {
-    depth: null,
-  });
-  return acc;
-}, {}), '<br/>', ': ', {
-  encodeURIComponent(value) {
-    return keys.has(value) ? `<strong>${value}</strong>` : value;
-  },
-});
+const debug = (obj) => querystring.stringify(
+  Object.entries(obj).reduce((acc, [key, value]) => {
+    keys.add(key);
+    if (isEmpty(value)) return acc;
 
-module.exports = (app, provider) => {
-  const {
-    constructor: {
-      errors: {
-        SessionNotFound,
-      },
-    },
-  } = provider;
+    set(acc, key, inspect(value, {
+      depth: null,
+    }));
+
+    return acc;
+  }, {}),
+  '<br/>',
+  ': ',
+  { encodeURIComponent: (value) => keys.has(value) ? `<strong>${value}</strong>` : value },
+);
+
+module.exports = (provider) => {
+  const body = express.urlencoded({ extended: false });
+  // eslint-disable-next-line
+  const router = express.Router();
 
   /**
    * Set header no-cache
@@ -53,7 +39,7 @@ module.exports = (app, provider) => {
     next();
   }
 
-  app.get('/interaction/:uid', setNoCache, async (req, res, next) => {
+  router.get('/interaction/:uid', setNoCache, async (req, res, next) => {
     try {
       const {
         uid,
@@ -131,7 +117,7 @@ module.exports = (app, provider) => {
     }
   });
 
-  app.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
+  router.post('/interaction/:uid/login', setNoCache, body, async (req, res, next) => {
     try {
       const {
         prompt: {
@@ -156,13 +142,12 @@ module.exports = (app, provider) => {
     }
   });
 
-  app.post('/interaction/:uid/continue', setNoCache, body, async (req, res, next) => {
+  router.post('/interaction/:uid/continue', setNoCache, body, async (req, res, next) => {
     try {
       const interaction = await provider.interactionDetails(req, res);
       const {
         prompt: {
           name,
-          details,
         },
       } = interaction;
       assert.equal(name, 'select_account');
@@ -189,12 +174,11 @@ module.exports = (app, provider) => {
     }
   });
 
-  app.post('/interaction/:uid/confirm', setNoCache, body, async (req, res, next) => {
+  router.post('/interaction/:uid/confirm', setNoCache, body, async (req, res, next) => {
     try {
       const {
         prompt: {
           name,
-          details,
         },
       } = await provider.interactionDetails(req, res);
       assert.equal(name, 'consent');
@@ -225,7 +209,7 @@ module.exports = (app, provider) => {
     }
   });
 
-  app.get('/interaction/:uid/abort', setNoCache, async (req, res, next) => {
+  router.get('/interaction/:uid/abort', setNoCache, async (req, res, next) => {
     try {
       const result = {
         error: 'access_denied',
@@ -239,18 +223,11 @@ module.exports = (app, provider) => {
     }
   });
 
-  app.use((err, req, res, next) => {
-    if (err instanceof SessionNotFound) {
-      // handle interaction expired / session not found error
-      res.redirect('/');
-    } else {
-      next(err);
-    }
-  });
-
-  app.get('/', (req, res) => {
+  router.get('/', (req, res) => {
     res.render('welcome', {
       layout: null,
     });
   });
+
+  return router;
 };

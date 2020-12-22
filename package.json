@@ -24,7 +24,8 @@
     "nodemon": "2.*"
   },
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "export DEBUG=oidc-provider:* && nodemon app.js",
+    "mon": "nodemon app.js",
     "lint": "eslint 'support/*.js' 'routes/*.js' 'adapters/*.js'"
   },
   "repository": {
