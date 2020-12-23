@@ -4,18 +4,14 @@
   "description": "OAuth2 client provider playground.",
   "main": "app.js",
   "dependencies": {
-    "cookie-parser": "1.4.*",
     "dotenv": "8.2.*",
     "ejs": "3.1.*",
     "express": "4.17.*",
     "firebase-admin": "9.*",
-    "helmet": "4.*",
     "lodash": "4.*",
     "nanoid": "3.*",
-    "object-hash": "2.*",
     "oidc-provider": "6.29.*",
-    "oidc-token-hash": "5.*",
-    "raw-body": "2.*"
+    "oidc-token-hash": "5.*"
   },
   "devDependencies": {
     "eslint": "^7.15.0",

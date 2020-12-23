@@ -2,7 +2,6 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
-const helmet = require('helmet');
 const { Provider } = require('oidc-provider');
 const adapter = require('./adapters/firestore');
 const configuration = require('./support/configuration');
@@ -14,8 +13,6 @@ const { PORT = 80 } = process.env;
 const { ISSUER = `http://localhost:${PORT}` } = process.env;
 
 (async (app, provider) => {
-  app.use(helmet({ contentSecurityPolicy: false }));
-
   app.set('views', path.join(__dirname, 'views'));
   app.set('view engine', 'ejs');
 
