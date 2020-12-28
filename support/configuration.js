@@ -26,6 +26,7 @@ module.exports = {
       grant_types: ['refresh_token', 'authorization_code'],
       response_types: ['code'],
       redirect_uris: ['http://localhost:3000/auth/cb/as1'],
+      post_logout_redirect_uris: ['http://localhost:3000/auth/cb/logout'],
     },
   ],
   formats: {

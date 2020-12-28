@@ -164,9 +164,14 @@ class FirestoreAdapter {
     }
     const batch = db.batch();
 
-    response.docs.forEach((doc) => batch.delete(
-      db.collection(this.name).doc(doc.id).delete()),
-    );
+    response.docs.forEach((doc) => {
+      try {
+        const docRef = db.collection(this.name).doc(doc.id).delete();
+        batch.delete(docRef);
+      } catch (err) {
+        return;
+      }
+    });
 
     await batch.commit();
   }

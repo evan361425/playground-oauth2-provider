@@ -1,1 +1,17 @@
-<h1>Hello try to ask authorization on <a href="/auth">/auth</a></h1>
+<h1>
+<% if (name.length) { %>
+Hello, <%= name %>!
+<% } else { %>
+Hello!
+<% } %>
+</h1>
+
+<p>
+  try to ask authorization on <a href="/auth">/auth</a>
+</p>
+
+<% if (name.length) { %>
+<p>
+  or <a href="/session/end">logout</a>
+</p>
+<% } %>

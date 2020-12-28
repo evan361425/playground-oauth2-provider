@@ -226,6 +226,7 @@ module.exports = (provider) => {
   router.get('/', (req, res) => {
     res.render('welcome', {
       layout: null,
+      name: req.session ? req.session.accountId : '',
     });
   });
 
